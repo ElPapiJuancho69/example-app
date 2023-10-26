@@ -96,3 +96,4 @@ Route::get('/catalogo/{catalogo}/show/{show}/id/{id}', function ($catalogo, $sho
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('descargar-entrenadores', [TrainerController::class, 'pdf'])->name('listado.pdf');

@@ -1,10 +1,10 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Http\Controllers\TrainerController;
 use Illuminate\Http\Request;
 use App\Models\Trainer;
 use Illuminate\Support\Facades\Storage;
+use Barryvdh\DomPDF\Facade\pdf as PDF;
 
 class TrainerController extends Controller
 {
@@ -16,7 +16,12 @@ class TrainerController extends Controller
         $trainers = Trainer::all();
         return view( 'index', compact( 'trainers'));
     }
-
+    public function PDF()
+    {
+        $trainers = Trainer::all();
+        $pdf    = PDF::loadView('pdf.listado', compact('trainers'));
+        return $pdf->download('listado.pdf');
+    }
     /**
      * Show the form for creating a new resource.
      */
@@ -81,14 +86,14 @@ class TrainerController extends Controller
             'apellido' => 'required|string',
             'avatar' => 'image|mimes:jpeg,jpg,png,gif,svg|max:2048', // Asegúrate de que 'avatar' sea un campo opcional
         ]);
-    
+
         if ($request->hasFile('avatar')) {
             // Guardar la nueva imagen
             $avatarPath = $request->file('avatar')->store('avatars', 'public');
-            
+
             // Borrar la imagen anterior si existe
             $imagePath = public_path('avatar/' . $trainer->avatar);
-    
+
             // Actualizar la ruta de la imagen en la base de datos
             $trainer->update([
                 'name' => $request->input('name'),
@@ -102,9 +107,9 @@ class TrainerController extends Controller
                 'apellido' => $request->input('apellido'),
             ]);
         }
-    
+
         return redirect()->route('trainers.show', ['trainer' => $trainer])->with('success', 'Entrenador actualizado con éxito.');
-        
+
     }
 
     /**
@@ -124,8 +129,5 @@ class TrainerController extends Controller
         return redirect("/trainers");
     }
 }
-
-
-
 }
 
